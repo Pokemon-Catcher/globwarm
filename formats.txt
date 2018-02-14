@@ -1,0 +1,59 @@
+	{
+		name: "[Gen 7] Global Warming Tourney",
+		desc: [
+			"Silly tourney"
+		],
+		mod: 'globwarm',
+		ruleset: ['Pokemon', 'Standard', 'Team Preview'],
+		banlist: ['Uber', 'Arena Trap', 'Power Construct', 'Shadow Tag', 'Baton Pass'],
+		onStart: function () {
+			this.setWeather('sunnyday');
+		},
+		onUpdate: function () {
+			this.setWeather('sunnyday');
+		},
+		onModifyTemplate: function (template, pokemon) {
+			if(pokemon.ged!=template.name){
+				let newTemp={types:[]};
+				newTemp.types[0]=template.types[0];
+				if(template.types[1])newTemp.types[1]=template.types[1];
+				for(let y in template.types){
+							
+							if(template.types[y]=='Water'&!template.types.includes('Ice')){
+								if(!template.types.includes('Fire'))
+									newTemp.types[template.types.length]='Fire';
+								else {
+									newTemp.types[0]='Fire'
+									newTemp.types[1]='???'
+								}
+							} else if(template.types[y]=='Ice'){
+								if(!template.types.includes('Water'))
+									newTemp.types[y]='Water';
+								else{
+									newTemp.types[0]='Water'
+									newTemp.types[1]='???'
+								}
+							} else if(template.types[y]=='Fire'&!template.types.includes('Water')){
+								if(!template.types.includes('Ground'))
+									newTemp.types[template.types.length]='Ground';
+								else{
+									newTemp.types[0]='Ground'
+									newTemp.types[1]='???'
+								}
+							}
+				}
+				for(let x in template){
+					if(!newTemp[x]) newTemp[x]=template[x];
+				}
+				return newTemp;
+			}
+		},	
+		onSwitchIn: function (pokemon) {
+			this.add('-start', pokemon, 'typechange', pokemon.types.join('/'), '[silent]');
+			if(pokemon.types[2]) this.add('-start', pokemon, 'typeadd', pokemon.types[2], '[silent]');
+		},
+		onAfterMega: function (pokemon) {
+			this.add('-start', pokemon, 'typechange', pokemon.types.join('/'), '[silent]');
+			if(pokemon.types[2]) this.add('-start', pokemon, 'typeadd', pokemon.types[2], '[silent]');
+		},
+	},

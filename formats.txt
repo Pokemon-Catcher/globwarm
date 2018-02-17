@@ -13,7 +13,7 @@
 			this.setWeather('sunnyday');
 		},
 		onModifyTemplate: function (template, pokemon) {
-			if(pokemon.ged!=template.name){
+			//Main
 				let newTemp={types:[]};
 				newTemp.types[0]=template.types[0];
 				if(template.types[1])newTemp.types[1]=template.types[1];
@@ -45,15 +45,48 @@
 				for(let x in template){
 					if(!newTemp[x]) newTemp[x]=template[x];
 				}
+				//Event
+				if(pokemon.speciesid=='gumshoos'&&pokemon.name=='The Trump'){
+						let baseStats={hp:128,atk:55,def:100,spa:120,spd:100,spe:85};
+						let stats=this.spreadModify(baseStats, pokemon.set);
+						let temple={baseStats,stats};
+						for(let x in template){
+							if(!temple[x]) temple[x]=template[x];
+						}
+						temple.baseStats=baseStats;
+						temple.stats=stats;
+						return temple;
+						}
 				return newTemp;
-			}
 		},	
 		onSwitchIn: function (pokemon) {
 			this.add('-start', pokemon, 'typechange', pokemon.types.join('/'), '[silent]');
 			if(pokemon.types[2]) this.add('-start', pokemon, 'typeadd', pokemon.types[2], '[silent]');
+			if(pokemon.speciesid=='gumshoos'&&pokemon.name=='The Trump'){			
+			let text=`<table><tr><b><th>HP</th><th>Attack</th><th>Defense</th><th>Sp.Attack</th><th>Sp.Defense</th><th>Speed</th></b></tr> <tr><td>128</td><td>55</td><td>100</td><td>120</td><td>100</td><td>85</td></tr></table>`;
+			this.add('html', `<font size=0.95 color=#5c5c8a>${text}</font>`);
+			}
 		},
 		onAfterMega: function (pokemon) {
 			this.add('-start', pokemon, 'typechange', pokemon.types.join('/'), '[silent]');
 			if(pokemon.types[2]) this.add('-start', pokemon, 'typeadd', pokemon.types[2], '[silent]');
 		},
+		validateSet: function (set, teamHas) {
+			//Pure Event
+			if(set.species=='gumshoos'&&set.name=='The Trump'){
+				Dex.modData('Learnsets', 'gumshoos').learnset.buildingawall=["7M", "5M"];
+				Dex.modData('Learnsets', 'gumshoos').learnset.great=["7M", "5M"];
+				Dex.modData('Learnsets', 'gumshoos').learnset.drainingkiss=["7M", "5M"];
+				Dex.modData('Learnsets', 'gumshoos').learnset.trumpcard=["7M", "5M"];
+			}
+			else if(set.species=='gumshoos'){
+				Dex.modData('Learnsets', 'gumshoos').learnset.buildingawall=[];
+				Dex.modData('Learnsets', 'gumshoos').learnset.great=[];
+				Dex.modData('Learnsets', 'gumshoos').learnset.drainingkiss=[];
+				Dex.modData('Learnsets', 'gumshoos').learnset.trumpcard=[];
+			}
+			let validator = new this.constructor(Dex.getFormat(this.format.id, []));
+			let problems = validator.validateSet(set,teamHas);
+			return problems;
+	  },
 	},
